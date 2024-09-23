@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      #<home-manager/nixos>
       #./home.nix
     ];
 
@@ -27,10 +28,6 @@
 
   #enable Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-
-  # Set your time zone.
-  time.timeZone = "Europe/Stockholm";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -90,9 +87,19 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  users.users.vincentl.isNormalUser = true;
+  home-manager.users.vincentl = { pkgs, ... }: {
+    home.packages = [ pkgs.atool pkgs.httpie ];
+    programs.bash.enable = true;
+
+    # The state version is required and should stay at the version you
+    # originally installed.
+    home.stateVersion = "24.05";
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vincentl = {
-    isNormalUser = true;
+    #isNormalUser = true;
     description = "Vincent Lundborg";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
@@ -107,6 +114,7 @@
       thunderbird
       git
       vscode
+      ldmtool
     ];
   };
 
