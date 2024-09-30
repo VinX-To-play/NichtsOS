@@ -16,6 +16,22 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  #mount harddrives
+  fileSystems."/mnt/500Gb" =
+    { device = "/dev/disk/by-uuid/779ceceb-e50b-4651-962d-3c5765e1b4f2";
+      fsType = "ext4";
+    };
+
+   fileSystems."/mnt/TB2" =
+    { device = "/dev/disk/by-uuid/2537896a-0298-4a70-b219-50567560c249";
+      fsType = "ext4";
+    };
+
+    fileSystems."/mnt/TB1" =
+    { device = "/dev/disk/by-uuid/E010202C10200C5A";
+      fsType = "ntfs";
+    };
+
   networking.hostName = "nichtsos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -28,6 +44,10 @@
 
   #enable Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
+
+  # Set your time zone.
+	time.timeZone = "Europe/Stockholm";
+
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -115,6 +135,13 @@
       git
       vscode
       ldmtool
+      wgnord
+      steam
+      heroic
+      vlc
+      sunshine
+      whatsapp-for-linux
+      nodejs_22
     ];
   };
 
@@ -129,6 +156,9 @@
     git
     spotifyd
     spotify-qt
+    neovim
+    calibre
+
   ];
   # alow for experimantel nix features
   nix = {
