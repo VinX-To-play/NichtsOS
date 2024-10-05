@@ -8,13 +8,21 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      #<home-manager/nixos>
-      #./home.nix
     ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  #Enabel extra kernal fetura 
+  boot.extraModulePackages = with config.boot.kernelPackages; [
+    v4l2loopback
+  ];
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback devices=1 video_nr=1 card_label="OBS Cam" exclusive_caps=1
+    options v4l2loopback devices=2 video_nr=1,2 card_label="OBS Cam, Virt Cam" exclusive_caps=1
+  '';
+  security.polkit.enable = true;
 
   #mount harddrives
   fileSystems."/mnt/500Gb" =
@@ -41,6 +49,8 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.interfaces.enp3s0.wakeOnLan.enable = true;
+  networking.interfaces.enp3s0.macAddress = "d6:22:c7:46:18:b4";  
 
   #enable Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -65,13 +75,17 @@
   };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = false;
+  services.xserver.enable = true;
 
-  # Enable the Wayland
-  services.displayManager.sddm.wayland.enable = true;
+  #Enable wayland & autologin
+  services.displayManager = { 
+    sddm.enable = true;
+    sddm.wayland.enable = true;
+    autoLogin.enable = true;
+    autoLogin.user = "vincentl";
+  };
 
   # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = false;
   services.desktopManager.plasma6.enable = true;
 
@@ -125,7 +139,6 @@
     packages = with pkgs; [
       firefox
       kate
-      discord
       xwaylandvideobridge
       spotify
       egl-wayland
@@ -136,14 +149,23 @@
       vscode
       ldmtool
       wgnord
-      steam
       heroic
       vlc
       sunshine
       whatsapp-for-linux
       nodejs_22
-    ];
+      calibre
+      spotifyd
+      spotify-qt
+      webcord-vencord
+      colmap
+      prismlauncher
+      bluemail
+   ];
   };
+
+  #install Steam
+  programs.steam.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -154,11 +176,10 @@
     wget
     obsidian
     git
-    spotifyd
-    spotify-qt
     neovim
-    calibre
-
+    ethtool
+    rustc
+    jellyfin-ffmpeg
   ];
   # alow for experimantel nix features
   nix = {
@@ -195,10 +216,19 @@
 	      package = config.boot.kernelPackages.nvidiaPackages.stable;
 	    };
 
+  #sunshine settings (remote Desktop)
+  services.sunshine = {
+    enable = true;
+    autoStart = true;
+    capSysAdmin = true; # only needed for Wayland -- omit this when using with Xorg
+    openFirewall = true;
+  };
+
 
   # List of Insecure Packages that are allowed 
   nixpkgs.config.permittedInsecurePackages = [
     "electron-25.9.0" # requierd for rebuild
+    "freeimage-unstable-2021-11-01" # for photogramitry
   ];
 
 

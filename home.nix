@@ -20,6 +20,7 @@
   #     xxx
   # '';
 
+
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # here is some command line tools I use frequently
@@ -30,6 +31,35 @@
     nix-output-monitor
 
   ];
+
+  home-manager.users.${globals.user} = {
+      home.file."config/ssh/id_rsa".source = ./id_rsa;
+      home.file."config/ssh/id_rsa".source = ./id_rsa.pub;
+
+      home.sessionVariables = {
+         GIT_SSH_COMMAND = "ssh -o IdentitiesOnly=yes -i /users/${globals.user}/config/ssh/id_rsa";
+      };
+  };
+
+  programs.git = {
+     enable=true;
+     extraConfig= {
+       pull.rebase = false;
+     };
+     userEmail="v@lundborgs.de";
+     userName="VinX-To-play";
+  };
+
+  programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-backgroundremoval
+      obs-pipewire-audio-capture
+      droidcam-obs
+      waveform
+    ];
+  };
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
