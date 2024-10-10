@@ -161,6 +161,7 @@
       colmap
       prismlauncher
       bluemail
+      itch
    ];
   };
 
